@@ -58,7 +58,7 @@ const App = () => {
 
       toast({
         title: 'Failure',
-        description: 'Failed to analyze sentiment or API key usage limit reached',
+        description: 'Failed to extract keyword or API key usage limit reached',
         status: 'error',
         duration: 9000,
         isClosable: true
