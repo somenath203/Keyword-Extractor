@@ -1,4 +1,4 @@
-import { Container, Box } from "@chakra-ui/react";
+import { Container, Box, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { Configuration, OpenAIApi } from "openai";
 
@@ -16,6 +16,8 @@ const App = () => {
 
   const [loading, setLoading] = useState();
 
+  const toast = useToast();
+
 
   const configuration = new Configuration({
 
@@ -28,23 +30,42 @@ const App = () => {
 
   const extractKeywordsFromText = async (text) => {
 
-    setLoading(true);
+    try {
 
-    setIsModalOpen(true);
+      setLoading(true);
 
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: 'Extract keywords from this text. Make the first letter of every word uppercase and separate with commas:\n\n' + text + '',
-      temperature: 0.5,
-      max_tokens: 60,
-      top_p: 1.0,
-      frequency_penalty: 0.8,
-      presence_penalty: 0.0
-    });
+      setIsModalOpen(true);
 
-    setKeywordsFromText(response.data.choices[0].text.trim());
+      const response = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: 'Extract keywords from this text. Make the first letter of every word uppercase and separate with commas:\n\n' + text + '',
+        temperature: 0.5,
+        max_tokens: 60,
+        top_p: 1.0,
+        frequency_penalty: 0.8,
+        presence_penalty: 0.0
+      });
 
-    setLoading(false);
+      setKeywordsFromText(response.data.choices[0].text.trim());
+
+      setLoading(false);
+
+    } catch (error) {
+
+      setLoading(false);
+
+      setIsModalOpen(false);
+
+      toast({
+        title: 'Failure',
+        description: 'Failed to analyze sentiment or API key usage limit reached',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      });
+
+
+    }
 
   };
 
